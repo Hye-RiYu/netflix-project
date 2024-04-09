@@ -20,6 +20,7 @@
   color: white;
   font-weight: bold;
   overflow-wrap: break-word;
+  padding: 10px;
 }
 
 .overlay:hover {
