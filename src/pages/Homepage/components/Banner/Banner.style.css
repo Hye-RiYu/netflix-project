@@ -21,23 +21,48 @@
   justify-content: center;
   height: 100%;
   padding: 2rem;
+  
 }
 
 .banner-text-area > * {
   z-index: 2;
 }
 
-@media (max-width: 800px) {
-  .banner-text-area {
-    width: 80%;
-    display: flex;
-    flex-direction: column;
-    justify-content: start;
-    /* height: 100%; */
-    padding: 1rem;
+@media (max-width: 992px) {
+  .banner {
+    height: 46vh;
   }
 
-  .banner-title {
-    margin-top: 2rem;
+  .banner::before {
+    height: 46vh;
+
+  }
+
+  .banner-text-area {
+    /* height: 56vh; */
+    width: 70%;
+    height: 100%;
+    padding: 3rem 1rem 1rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
+
+@media (max-width: 480px) {
+  .banner {
+    height: 46vh;
+  }
+
+  .banner::before {
+    height: 46vh;
+
+  }
+
+  .banner-text-area {
+    padding: 1rem;
+  }
+}
+
+
+
+

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSearchMovieQuery } from '../../hooks/useSearchMovie';
 import { useSearchParams } from 'react-router-dom';
 import Alert from 'react-bootstrap/Alert';
@@ -27,8 +27,8 @@ const MoviePage = () => {
   const handlePageClick = ({ selected }) => {
     setPage(selected + 1);
   };
-
   console.log('data', data);
+  
   if (isLoading) {
     return (
       <div className='spinner-area'>
