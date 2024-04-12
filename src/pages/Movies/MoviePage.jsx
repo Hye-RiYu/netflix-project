@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSearchMovieQuery } from '../../hooks/useSearchMovie';
 import { useSearchParams } from 'react-router-dom';
 import Alert from 'react-bootstrap/Alert';
@@ -6,8 +6,11 @@ import Spinner from 'react-bootstrap/Spinner';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Dropdown from 'react-bootstrap/Dropdown';
 import MovieCard from '../../common/MovieCard/MovieCard';
 import ReactPaginate from 'react-paginate';
+import './MoviePage.style.css'
+import { useMovieGenreQuery } from '../../hooks/useMovieGenre';
 
 
 // 경로 2가지
@@ -20,14 +23,32 @@ import ReactPaginate from 'react-paginate';
 const MoviePage = () => {
   const [ query, setQuery ] = useSearchParams();
   const [ page, setPage ] = useState(1);
+  const [sortBy, setSortBy] = useState(); // 정렬 기준
   const keyword = query.get('q');
 
   const { data, isLoading, isError, error } = useSearchMovieQuery({ keyword, page });
+  const { data: genresData } = useMovieGenreQuery();
 
   const handlePageClick = ({ selected }) => {
     setPage(selected + 1);
   };
-  console.log('data', data);
+
+  const handleSortChange = (sortBy) => {
+    setSortBy(sortBy);
+  };
+
+  // console.log('data', data);
+
+  const sortMovies = (movies) => {
+    return movies.sort((a, b) => {
+      if (sortBy === 'popularity.desc') {
+        return a.popularity - b.popularity; // 인기도로 오름차순 정렬
+      } else if (sortBy === 'popularity.asc') {
+        return b.popularity - a.popularity; // 인기도로 내림차순 정렬
+      }
+      return 0;
+    });
+  };
   
   if (isLoading) {
     return (
@@ -45,13 +66,45 @@ const MoviePage = () => {
     return <Alert variant='danger'>{error.message}</Alert>;
   }
 
+  // 정렬된 영화 데이터
+  const sortedMovies = sortMovies(data?.results);
+
   return (
     <Container>
       <Row>
-        <Col lg={4} xs={12}>필터</Col>
+        <Col lg={4} xs={12} className='filter'>
+          <Row className='filter-dropdown'>
+            <Dropdown>
+              <Dropdown.Toggle variant="danger" id="dropdown-basic">
+                Sort
+              </Dropdown.Toggle>
+
+              <Dropdown.Menu>
+                <Dropdown.Item onClick={() => handleSortChange('popularity.desc')} href="#/action-1">High to Low</Dropdown.Item>
+                <Dropdown.Item onClick={() => handleSortChange('popularity.asc')} href="#/action-2">Low to High</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          </Row>
+          <Row className='filter-dropdown'>
+            <Dropdown>
+              <Dropdown.Toggle variant="danger" id="dropdown-basic">
+                Genre
+              </Dropdown.Toggle>
+
+              <Dropdown.Menu>
+                {genresData &&
+                  genresData.map((genre) => (
+                    <Dropdown.Item key={genre.id} href={`#/genre/${genre.id}`}>
+                      {genre.name}
+                    </Dropdown.Item>
+                  ))}
+              </Dropdown.Menu>
+            </Dropdown>
+          </Row>
+        </Col>
         <Col lg={8} xs={12}>
           <Row>
-            {data?.results.map((movie, index) => 
+            {sortedMovies.map((movie, index) => 
             <Col key={index} lg={4} xs={12}>
               <MovieCard movie={movie} />
             </Col>)}

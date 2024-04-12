@@ -1,0 +1,17 @@
+.filter {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  padding-top: 60px;
+} 
+
+#dropdown-basic {
+  width: 180px;
+  border: 1px solid white;
+  margin-bottom: 20px;
+}
+
+.dropdown-menu {
+  width: 180px;
+  text-align: center;
+}
