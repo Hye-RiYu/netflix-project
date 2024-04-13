@@ -24,6 +24,7 @@ const MoviePage = () => {
   const [ query, setQuery ] = useSearchParams();
   const [ page, setPage ] = useState(1);
   const [sortBy, setSortBy] = useState(); // 정렬 기준
+  const [selectedGenreId, setSelectedGenreId] = useState('All'); // 선택된 장르
   const keyword = query.get('q');
 
   const { data, isLoading, isError, error } = useSearchMovieQuery({ keyword, page });
@@ -36,6 +37,19 @@ const MoviePage = () => {
   const handleSortChange = (sortBy) => {
     setSortBy(sortBy);
   };
+
+  const handleGenreChange = (genreId) => {
+    setSelectedGenreId(genreId);
+  };
+
+  const filterMoviesByGenre = (movies, selectedGenreId) => {
+    if (!selectedGenreId || selectedGenreId === 'All') {
+      return movies;
+    }
+  
+    return movies.filter((movie) => movie.genre_ids.includes(parseInt(selectedGenreId)));
+  };
+  
 
   // console.log('data', data);
 
@@ -68,6 +82,8 @@ const MoviePage = () => {
 
   // 정렬된 영화 데이터
   const sortedMovies = sortMovies(data?.results);
+  // 장르를 기준으로 영화 필터링
+  const filteredMovies = filterMoviesByGenre(sortedMovies, selectedGenreId);
 
   return (
     <Container>
@@ -76,10 +92,11 @@ const MoviePage = () => {
           <Row className='filter-dropdown'>
             <Dropdown>
               <Dropdown.Toggle variant="danger" id="dropdown-basic">
-                Sort
+                {sortBy ? (sortBy === 'popularity.desc' ? 'High to Low' : 'Low to High') : 'Sort'}
               </Dropdown.Toggle>
 
               <Dropdown.Menu>
+                <Dropdown.Item onClick={() => handleSortChange('')} href="#/action-1">Sort</Dropdown.Item>
                 <Dropdown.Item onClick={() => handleSortChange('popularity.desc')} href="#/action-1">High to Low</Dropdown.Item>
                 <Dropdown.Item onClick={() => handleSortChange('popularity.asc')} href="#/action-2">Low to High</Dropdown.Item>
               </Dropdown.Menu>
@@ -88,13 +105,14 @@ const MoviePage = () => {
           <Row className='filter-dropdown'>
             <Dropdown>
               <Dropdown.Toggle variant="danger" id="dropdown-basic">
-                Genre
+                {selectedGenreId === 'All' ? 'Genre' : genresData.find(genre => genre.id === parseInt(selectedGenreId))?.name || 'Genre'}
               </Dropdown.Toggle>
 
               <Dropdown.Menu>
+              <Dropdown.Item onClick={() => handleGenreChange('All')} href="#/action-1">All</Dropdown.Item>
                 {genresData &&
                   genresData.map((genre) => (
-                    <Dropdown.Item key={genre.id} href={`#/genre/${genre.id}`}>
+                    <Dropdown.Item key={genre.id} onClick={() => handleGenreChange(genre.id)} href={`#/genre/${genre.id}`}>
                       {genre.name}
                     </Dropdown.Item>
                   ))}
@@ -102,20 +120,22 @@ const MoviePage = () => {
             </Dropdown>
           </Row>
         </Col>
-        <Col lg={8} xs={12}>
-          <Row>
-            {sortedMovies.map((movie, index) => 
-            <Col key={index} lg={4} xs={12}>
+        <Col lg={8} xs={12} className='mobile-col'>
+          <Row className='mobile-row'>
+            {filteredMovies.map((movie, index) => 
+            <Col className='mobile-card' key={index} lg={3} xs={12}>
               <MovieCard movie={movie} />
             </Col>)}
           </Row>
-          <ReactPaginate
-            nextLabel="next >"
+        </Col>
+        <Row>
+        <ReactPaginate
+            nextLabel=">"
             onPageChange={handlePageClick}
             pageRangeDisplayed={3}
             marginPagesDisplayed={2}
             pageCount={data?.total_pages} // 전체페이지가 몇개인지
-            previousLabel="< previous"
+            previousLabel="<"
             pageClassName="page-item"
             pageLinkClassName="page-link"
             previousClassName="page-item"
@@ -130,7 +150,7 @@ const MoviePage = () => {
             renderOnZeroPageCount={null}
             forcePage={page - 1}
           />
-        </Col>
+        </Row>
       </Row>
     </Container>
   )

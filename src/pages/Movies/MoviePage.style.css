@@ -15,3 +15,55 @@
   width: 180px;
   text-align: center;
 }
+
+.mobile-card {
+  margin: 10px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-left: 200px;
+}
+
+@media (max-width: 480px) {
+
+  .filter {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-top: 10px;
+  } 
+
+  #dropdown-basic {
+    width: 160px;
+
+  }
+
+  .dropdown-menu {
+    width: 160px;
+  }
+
+  .mobile-col {
+    width: 300px;
+    margin-left: 50px;
+  }
+
+  .mobile-row {
+    width: 300px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .mobile-card {
+    width: 150px;
+    margin: 0;
+  }
+
+  .pagination {
+    margin: 0 0 0 5px;
+    position: absolute;
+    bottom: 40px;
+  }
+
+}
